@@ -15,18 +15,18 @@ public class Customer {
         this.FirstName = FirstName;
         this.LastName = LastName;
         this.PhoneNumber = PhoneNumber;
+        setCustId();
     }
 
-    public Customer(String FirstName) {
+    public Customer(String FirstName, String LastName) {
         this.FirstName = FirstName;
-        this.LastName = "Cortese";
+        this.LastName = LastName;
         this.PhoneNumber= "(336)259-9349";
+        setCustId();
     }
 
     public Customer() {
-        this.FirstName = "Zachary";
-        this.LastName = "Cortese";
-        this.PhoneNumber= "(336)259-9349";
+        //nothing        
     }
 
     public String getFirstName() {
@@ -52,7 +52,11 @@ public class Customer {
     public void setPhoneNumber(String PhoneNumber) {
         this.PhoneNumber = PhoneNumber;
     }
+    private void setCustId(){
+        this.CustId = getFirstName()+getLastName()+getPhoneNumber();
+    }
    
+    private String CustId;
     private String FirstName;
     private String LastName;
     private String PhoneNumber;
