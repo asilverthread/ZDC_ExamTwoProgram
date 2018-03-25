@@ -67,6 +67,10 @@ public class Car {
     public void setYear(int Year) {
         this.Year = Year;
     }
+    @Override
+    public String toString(){
+        return this.LicensePlate;
+    }
     
     //var dec
     private String LicensePlate;

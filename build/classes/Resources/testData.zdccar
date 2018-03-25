@@ -1,0 +1,12 @@
+<CAR>
+ABC-1234,Red,Toyota,Camry,2016
+XYZ-5879,Blue,Tesla,Model3,2018
+</CAR>
+<CUSTOMER>
+John,Doe,(123)456-7890
+Happy,Golucky,(987)654-3210
+</CUSTOMER>
+<RENTAL>
+ABC-1234,JohnDoe(123)456-7890,3
+DEF-5678,HappyGolucky(987)654-3210,2
+</RENTAL>

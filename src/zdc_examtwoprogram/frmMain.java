@@ -4,13 +4,26 @@
  * and open the template in the editor.
  */
 package zdc_examtwoprogram;
-
+import java.io.File;
+import javax.swing.JFileChooser;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 /**
  *
  * @author Interact
  */
 public class frmMain extends javax.swing.JFrame {
-
+    JFileChooser jfcChooser = new JFileChooser();
+    FileNameExtensionFilter fnef = new FileNameExtensionFilter("zdcCar files","zdccar");
+    
     /**
      * Creates new form ExamTwoUI
      */
@@ -27,6 +40,23 @@ public class frmMain extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        lstRentals = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        txtCustName = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtCar = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtDays = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        lstCars = new javax.swing.JList<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        lstCustomers = new javax.swing.JList<>();
+        btnCreateRental = new javax.swing.JButton();
+        btnDetails = new javax.swing.JButton();
         mnuMain = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuFileNew = new javax.swing.JMenuItem();
@@ -40,12 +70,81 @@ public class frmMain extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        lstRentals.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Data not loaded" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(lstRentals);
+
+        jLabel1.setText("Customer:");
+
+        txtCustName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCustNameActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Car:");
+
+        txtCar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCarActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Days Renting:");
+
+        jLabel4.setText("Active Rentals:");
+
+        jLabel5.setText("Available Cars:");
+
+        jLabel6.setText("Customers:");
+
+        lstCars.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Data not loaded" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(lstCars);
+
+        lstCustomers.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Data not loaded" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(lstCustomers);
+
+        btnCreateRental.setText("Create Rental");
+        btnCreateRental.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateRentalActionPerformed(evt);
+            }
+        });
+
+        btnDetails.setText("Show Details");
+        btnDetails.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDetailsActionPerformed(evt);
+            }
+        });
+
         mnuFile.setText("File");
 
         mnuFileNew.setText("New");
+        mnuFileNew.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileNewActionPerformed(evt);
+            }
+        });
         mnuFile.add(mnuFileNew);
 
         mnuFileOpen.setText("Open");
+        mnuFileOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileOpenActionPerformed(evt);
+            }
+        });
         mnuFile.add(mnuFileOpen);
 
         mnuFileClose.setText("Close");
@@ -80,11 +179,78 @@ public class frmMain extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(24, 24, 24))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtCustName, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtCar)
+                            .addComponent(txtDays))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnCreateRental, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel5)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3))
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 277, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(txtCustName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDays, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(btnCreateRental)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnDetails)
+                                .addGap(20, 20, 20))))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
 
         pack();
@@ -94,6 +260,123 @@ public class frmMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_mnuFileSaveActionPerformed
 
+    private void mnuFileNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileNewActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mnuFileNewActionPerformed
+
+    private void txtCustNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCustNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCustNameActionPerformed
+
+    private void txtCarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCarActionPerformed
+
+    private void btnCreateRentalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRentalActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCreateRentalActionPerformed
+
+    private void btnDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnDetailsActionPerformed
+
+    private void mnuFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileOpenActionPerformed
+        // TODO add your handling code here:
+        readData(getSelectedFile());
+    }//GEN-LAST:event_mnuFileOpenActionPerformed
+    private File getSelectedFile(String dlg){
+        jfcChooser.setFileFilter(fnef);
+        jfcChooser.showDialog(this,dlg);
+        System.out.println(jfcChooser.getSelectedFile().toString());
+        return jfcChooser.getSelectedFile();
+    }
+    private File getSelectedFile(){
+        jfcChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        jfcChooser.setFileFilter(fnef);
+        jfcChooser.showDialog(this,"Select a .zdccar");
+        System.out.println(jfcChooser.getSelectedFile().toString());
+        return jfcChooser.getSelectedFile();
+    }
+    private void updateList(javax.swing.JList<String> j, ArrayList<Object> arr){
+        DefaultListModel<String> arrStr = new DefaultListModel<>();
+        arrStr.clear();
+        for (Object o : arr){
+            arrStr.addElement(o.toString());
+        }
+        j.setModel(arrStr);
+    }
+    private void readData(File f){
+        ArrayList<Object> arrCars = new ArrayList<>();
+        ArrayList<Object> arrCustomer = new ArrayList<>();
+        ArrayList<Object> arrRentals = new ArrayList<>();     
+        try{
+            FileReader fr = new FileReader(f);
+            BufferedReader br = new BufferedReader(fr);
+            int curReadingType = -1; //0 = cars 1 = customers, 2 = rentals
+            String line;
+            while((line = br.readLine())!= null){
+                System.out.println(line);
+                if (line.contains("<CAR>")){
+                    curReadingType = 0;
+                }
+                else if (line.contains("<CUSTOMER>")){
+                        curReadingType = 1;                   
+                } 
+                else if (line.contains("<RENTAL>")){
+                        curReadingType = 2;
+                } else {
+                    List<String> vals = Arrays.asList(line.split(","));
+                    switch (curReadingType){
+                        case 0:
+                            try{
+                                arrCars.add(new Car(vals.get(0),vals.get(1),vals.get(2),vals.get(3),Integer.parseInt(vals.get(4))));
+                            }catch(Exception e){
+                                System.err.println("Got bad data for a car");
+                            }
+                            break;
+                        case 1:
+                            try{
+                                arrCustomer.add(new Customer(vals.get(0),vals.get(1),vals.get(2)));
+                            }catch(Exception e){
+                                System.err.println("got bad data for a customer");
+                            }
+                            break;
+                        case 2:
+                            try{
+                                //search the car and customer list for cars/customers with the same name, otherwise create a new customer and car with that name
+                                Object car = new Car();
+                                Object customer = new Customer();
+                                for (Object o : arrCars){
+                                    if(o.toString().equals(vals.get(0))){
+                                        car = o;
+                                    }
+                                }
+                                for (Object o : arrCustomer){
+                                    if(o.toString().equals(vals.get(1))){
+                                        customer = o;
+                                    }
+                                }
+                            }catch(Exception e){
+                                System.err.println("got bad data for a rental");
+                            }
+                            break;
+                        default:
+                            System.err.println("Default case hit somehow...");
+                            break;
+                    }
+                }                
+            }
+        }catch(Exception e){
+            System.err.println(e);
+        }
+        try{
+            updateList(lstCars,arrCars);
+            updateList(lstCustomers,arrCustomer);
+            updateList(lstRentals,arrRentals);
+        }catch(Exception e){
+            System.err.println("Problem updating JLists");
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -127,10 +410,25 @@ public class frmMain extends javax.swing.JFrame {
             public void run() {
                 new frmMain().setVisible(true);
             }
-        });
+        });     
     }
-
+    //Zach's variable declarations - DO modify if you want I guess, I don't care. I'm not snarky like netbeans generated code is
+    private int returnValue;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCreateRental;
+    private javax.swing.JButton btnDetails;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JList<String> lstCars;
+    private javax.swing.JList<String> lstCustomers;
+    private javax.swing.JList<String> lstRentals;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileClose;
     private javax.swing.JMenuItem mnuFileNew;
@@ -141,5 +439,8 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JMenu mnuTools;
     private javax.swing.JMenuItem mnuToolsRecursiveExample;
     private javax.swing.JMenuItem mnuToolsSearch;
+    private javax.swing.JTextField txtCar;
+    private javax.swing.JTextField txtCustName;
+    private javax.swing.JTextField txtDays;
     // End of variables declaration//GEN-END:variables
 }

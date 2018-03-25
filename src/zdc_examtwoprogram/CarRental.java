@@ -43,6 +43,12 @@ public class CarRental {
     public void setcustomerRenting(Customer customerRenting) {
         this.customerRenting = customerRenting;
     }
+    
+    @Override
+    public String toString(){
+        return this.carToRent.toString()+this.customerRenting.toString()+Integer.toString(this.numberOfDays);
+    }
+    
     private Car carToRent;
     private Customer customerRenting;
     private int numberOfDays;

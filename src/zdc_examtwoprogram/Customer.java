@@ -55,7 +55,10 @@ public class Customer {
     private void setCustId(){
         this.CustId = getFirstName()+getLastName()+getPhoneNumber();
     }
-   
+    @Override
+    public String toString(){
+        return this.CustId;
+    }
     private String CustId;
     private String FirstName;
     private String LastName;
