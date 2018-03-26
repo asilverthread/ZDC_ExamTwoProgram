@@ -221,6 +221,11 @@ public class frmMain extends javax.swing.JFrame {
         mnuTools.add(mnuToolsSearch);
 
         mnuToolsRecursiveExample.setText("Recursive Example");
+        mnuToolsRecursiveExample.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuToolsRecursiveExampleActionPerformed(evt);
+            }
+        });
         mnuTools.add(mnuToolsRecursiveExample);
 
         mnuMain.add(mnuTools);
@@ -349,6 +354,7 @@ public class frmMain extends javax.swing.JFrame {
         // TODO add your handling code here:
         try{
             arrRentals.add(new CarRental(arrCars.get(lstCars.getSelectedIndex()),arrCustomer.get(lstCustomers.getSelectedIndex()),Integer.parseInt(txtDays.getText())));
+            updateList(lstRentals,arrRentals);
         }catch(Exception ex){
         System.err.println("Make sure you have a customer AND a vehicle selected, and type in a number of days for the rental");
         }
@@ -401,9 +407,15 @@ public class frmMain extends javax.swing.JFrame {
 
     private void mnuToolsSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuToolsSearchActionPerformed
         // TODO add your handling code here:
-        frm3 = new frmSearch(this);
+        frm3 = new frmSearch(this.arrCars);
         frm3.setVisible(true);
     }//GEN-LAST:event_mnuToolsSearchActionPerformed
+
+    private void mnuToolsRecursiveExampleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuToolsRecursiveExampleActionPerformed
+        // TODO add your handling code here:
+        frm4 = new frmRecursion();
+        frm4.setVisible(true);
+    }//GEN-LAST:event_mnuToolsRecursiveExampleActionPerformed
     private File getSelectedFile(String dlg){
         jfcChooser.setFileFilter(fnef);
         jfcChooser.showDialog(this,dlg);
@@ -573,6 +585,7 @@ public class frmMain extends javax.swing.JFrame {
     }
     //Zach's variable declarations - DO modify if you want I guess, I don't care. I'm not snarky like netbeans generated code is
     private int returnValue;
+    public frmRecursion frm4;
     public frmAddCustomer frm1;
     public frmAddCar frm2;
     public frmSearch frm3;

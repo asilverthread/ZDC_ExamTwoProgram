@@ -67,6 +67,9 @@ public class Car implements zdccarWritable{
     public void setYear(int Year) {
         this.Year = Year;
     }
+    public String getDetails(){
+        return this.getColor()+" "+this.getMake()+" "+this.getModel() + " "+ "With LP #:" +getLicensePlate();
+    }
     @Override
     public String toString(){
         return this.LicensePlate;
