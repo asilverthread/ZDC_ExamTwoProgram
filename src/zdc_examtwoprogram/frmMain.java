@@ -10,11 +10,15 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 /**
  *
@@ -23,7 +27,11 @@ import javax.swing.ListModel;
 public class frmMain extends javax.swing.JFrame {
     JFileChooser jfcChooser = new JFileChooser();
     FileNameExtensionFilter fnef = new FileNameExtensionFilter("zdcCar files","zdccar");
-    
+    ArrayList<Car> arrCars = new ArrayList<>();
+    ArrayList<Customer> arrCustomer = new ArrayList<>();
+    ArrayList<CarRental> arrRentals = new ArrayList<>();
+    boolean fileOpened = false;
+    File openFile;
     /**
      * Creates new form ExamTwoUI
      */
@@ -56,14 +64,15 @@ public class frmMain extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         lstCustomers = new javax.swing.JList<>();
         btnCreateRental = new javax.swing.JButton();
-        btnDetails = new javax.swing.JButton();
         mnuMain = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
-        mnuFileNew = new javax.swing.JMenuItem();
         mnuFileOpen = new javax.swing.JMenuItem();
         mnuFileClose = new javax.swing.JMenuItem();
         mnuFileSave = new javax.swing.JMenuItem();
         mnuFileSaveAs = new javax.swing.JMenuItem();
+        mnuFileNew = new javax.swing.JMenu();
+        mnuFileNewCustomer = new javax.swing.JMenuItem();
+        mnuFileNewCar = new javax.swing.JMenuItem();
         mnuTools = new javax.swing.JMenu();
         mnuToolsSearch = new javax.swing.JMenuItem();
         mnuToolsRecursiveExample = new javax.swing.JMenuItem();
@@ -75,10 +84,18 @@ public class frmMain extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        lstRentals.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstRentals.setEnabled(false);
+        lstRentals.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstRentalsValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstRentals);
 
         jLabel1.setText("Customer:");
 
+        txtCustName.setEditable(false);
         txtCustName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCustNameActionPerformed(evt);
@@ -87,6 +104,7 @@ public class frmMain extends javax.swing.JFrame {
 
         jLabel2.setText("Car:");
 
+        txtCar.setEditable(false);
         txtCar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCarActionPerformed(evt);
@@ -106,12 +124,26 @@ public class frmMain extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        lstCars.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstCars.setEnabled(false);
+        lstCars.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstCarsValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(lstCars);
 
         lstCustomers.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Data not loaded" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
+        });
+        lstCustomers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstCustomers.setEnabled(false);
+        lstCustomers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                lstCustomersValueChanged(evt);
+            }
         });
         jScrollPane3.setViewportView(lstCustomers);
 
@@ -122,22 +154,7 @@ public class frmMain extends javax.swing.JFrame {
             }
         });
 
-        btnDetails.setText("Show Details");
-        btnDetails.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDetailsActionPerformed(evt);
-            }
-        });
-
         mnuFile.setText("File");
-
-        mnuFileNew.setText("New");
-        mnuFileNew.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mnuFileNewActionPerformed(evt);
-            }
-        });
-        mnuFile.add(mnuFileNew);
 
         mnuFileOpen.setText("Open");
         mnuFileOpen.addActionListener(new java.awt.event.ActionListener() {
@@ -148,6 +165,11 @@ public class frmMain extends javax.swing.JFrame {
         mnuFile.add(mnuFileOpen);
 
         mnuFileClose.setText("Close");
+        mnuFileClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileCloseActionPerformed(evt);
+            }
+        });
         mnuFile.add(mnuFileClose);
 
         mnuFileSave.setText("Save");
@@ -159,13 +181,43 @@ public class frmMain extends javax.swing.JFrame {
         mnuFile.add(mnuFileSave);
 
         mnuFileSaveAs.setText("Save As");
+        mnuFileSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileSaveAsActionPerformed(evt);
+            }
+        });
         mnuFile.add(mnuFileSaveAs);
+
+        mnuFileNew.setText("New...");
+
+        mnuFileNewCustomer.setText("Customer");
+        mnuFileNewCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileNewCustomerActionPerformed(evt);
+            }
+        });
+        mnuFileNew.add(mnuFileNewCustomer);
+
+        mnuFileNewCar.setText("Car");
+        mnuFileNewCar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuFileNewCarActionPerformed(evt);
+            }
+        });
+        mnuFileNew.add(mnuFileNewCar);
+
+        mnuFile.add(mnuFileNew);
 
         mnuMain.add(mnuFile);
 
         mnuTools.setText("Tools");
 
         mnuToolsSearch.setText("Search");
+        mnuToolsSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuToolsSearchActionPerformed(evt);
+            }
+        });
         mnuTools.add(mnuToolsSearch);
 
         mnuToolsRecursiveExample.setText("Recursive Example");
@@ -198,10 +250,8 @@ public class frmMain extends javax.swing.JFrame {
                             .addComponent(txtDays))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnCreateRental, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)))
+                        .addComponent(btnCreateRental)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel5)
@@ -210,8 +260,8 @@ public class frmMain extends javax.swing.JFrame {
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -237,17 +287,15 @@ public class frmMain extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDays, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel6)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGap(37, 37, 37)
                                 .addComponent(btnCreateRental)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnDetails)
                                 .addGap(20, 20, 20))))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -256,13 +304,38 @@ public class frmMain extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void saveFile(File f){
+        try {
+            FileWriter fw = new FileWriter(f);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("<CAR>\n");
+            for(zdccarWritable z : arrCars){
+                bw.write(z.prepForWrite()+"\n");
+            }
+            bw.write("</CAR>\n<CUSTOMER>\n");
+            for(zdccarWritable z: arrCustomer){
+                bw.write(z.prepForWrite()+"\n");
+            }
+            bw.write("</CUSTOMER>\n<RENTAL>\n");
+            for(zdccarWritable z: arrRentals){
+                bw.write(z.prepForWrite()+"\n");
+            }
+            bw.write("</RENTAL>\n");
+            bw.close();
+        } catch (Exception ex) {
+            System.err.println(ex);
+        }
+        
+    }
     private void mnuFileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileSaveActionPerformed
         // TODO add your handling code here:
+        if (fileOpened){
+        saveFile(openFile);
+        }else{
+        JOptionPane.showConfirmDialog(this, "No file currently open! doing \"Save as\" instead");
+        saveNewFile();
+        }
     }//GEN-LAST:event_mnuFileSaveActionPerformed
-
-    private void mnuFileNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileNewActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mnuFileNewActionPerformed
 
     private void txtCustNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCustNameActionPerformed
         // TODO add your handling code here:
@@ -274,41 +347,122 @@ public class frmMain extends javax.swing.JFrame {
 
     private void btnCreateRentalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateRentalActionPerformed
         // TODO add your handling code here:
+        try{
+            arrRentals.add(new CarRental(arrCars.get(lstCars.getSelectedIndex()),arrCustomer.get(lstCustomers.getSelectedIndex()),Integer.parseInt(txtDays.getText())));
+        }catch(Exception ex){
+        System.err.println("Make sure you have a customer AND a vehicle selected, and type in a number of days for the rental");
+        }
     }//GEN-LAST:event_btnCreateRentalActionPerformed
-
-    private void btnDetailsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDetailsActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnDetailsActionPerformed
 
     private void mnuFileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileOpenActionPerformed
         // TODO add your handling code here:
+        fileOpened = true;
         readData(getSelectedFile());
+        lstCars.setEnabled(true);
+        lstCustomers.setEnabled(true);
+        lstRentals.setEnabled(true);
     }//GEN-LAST:event_mnuFileOpenActionPerformed
+
+    private void mnuFileCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileCloseActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_mnuFileCloseActionPerformed
+
+    private void lstCarsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstCarsValueChanged
+        // TODO add your handling code here:
+        txtCar.setText(arrCars.get(lstCars.getSelectedIndex()).toString());
+    }//GEN-LAST:event_lstCarsValueChanged
+
+    private void lstCustomersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstCustomersValueChanged
+        // TODO add your handling code here:
+        txtCustName.setText(arrCustomer.get(lstCustomers.getSelectedIndex()).toString()); 
+    }//GEN-LAST:event_lstCustomersValueChanged
+
+    private void lstRentalsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstRentalsValueChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lstRentalsValueChanged
+
+    private void mnuFileNewCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileNewCustomerActionPerformed
+        // TODO add your handling code here:
+        frm1 = new frmAddCustomer(arrCustomer, this);
+        frm1.setVisible(true);
+    }//GEN-LAST:event_mnuFileNewCustomerActionPerformed
+
+    private void mnuFileNewCarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileNewCarActionPerformed
+        // TODO add your handling code here:
+        frm2 = new frmAddCar(arrCars, this);
+        frm2.setVisible(true);
+    }//GEN-LAST:event_mnuFileNewCarActionPerformed
+
+    private void mnuFileSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuFileSaveAsActionPerformed
+        // TODO add your handling code here:
+        saveNewFile();
+    }//GEN-LAST:event_mnuFileSaveAsActionPerformed
+
+    private void mnuToolsSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuToolsSearchActionPerformed
+        // TODO add your handling code here:
+        frm3 = new frmSearch(this);
+        frm3.setVisible(true);
+    }//GEN-LAST:event_mnuToolsSearchActionPerformed
     private File getSelectedFile(String dlg){
         jfcChooser.setFileFilter(fnef);
         jfcChooser.showDialog(this,dlg);
         System.out.println(jfcChooser.getSelectedFile().toString());
+        openFile = jfcChooser.getSelectedFile();
         return jfcChooser.getSelectedFile();
+    }
+    private void saveNewFile(){
+        String title;
+        title = JOptionPane.showInputDialog("What would you like to name your new file?");
+        jfcChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        jfcChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        jfcChooser.showDialog(this,"Select a directory to save your .zdccar file");
+        File f = new File(jfcChooser.getSelectedFile().getPath()+"//"+title+".zdccar");
+        saveFile(f);
     }
     private File getSelectedFile(){
         jfcChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
         jfcChooser.setFileFilter(fnef);
         jfcChooser.showDialog(this,"Select a .zdccar");
         System.out.println(jfcChooser.getSelectedFile().toString());
+        openFile = jfcChooser.getSelectedFile();
         return jfcChooser.getSelectedFile();
     }
-    private void updateList(javax.swing.JList<String> j, ArrayList<Object> arr){
+    public void updateCustList(){
         DefaultListModel<String> arrStr = new DefaultListModel<>();
         arrStr.clear();
-        for (Object o : arr){
+        arrCustomer.forEach((o) -> {
             arrStr.addElement(o.toString());
-        }
+        });
+        lstCustomers.setEnabled(true);
+        lstCustomers.setModel(arrStr);
+    }
+    public void updateCarList(){
+        DefaultListModel<String> arrStr = new DefaultListModel<>();
+        arrStr.clear();
+        arrCars.forEach((o) -> {
+            arrStr.addElement(o.toString());
+        });
+        lstCars.setEnabled(true);
+        lstCars.setModel(arrStr);
+    }
+    
+    private void updateList(javax.swing.JList<String> j, ArrayList<?> arr){
+        DefaultListModel<String> arrStr = new DefaultListModel<>();
+        arrStr.clear();
+        arr.forEach((o) -> {
+            arrStr.addElement(o.toString());
+        });
         j.setModel(arrStr);
     }
-    private void readData(File f){
-        ArrayList<Object> arrCars = new ArrayList<>();
-        ArrayList<Object> arrCustomer = new ArrayList<>();
-        ArrayList<Object> arrRentals = new ArrayList<>();     
+   /* public void newCustomer(){
+        this.arrCustomer = frm1.getCustomers();
+    }
+    public void newCar(){
+        this.arrCars = frm2.getCars();
+    }
+    */
+    private void readData(File f){           
         try{
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
@@ -324,6 +478,9 @@ public class frmMain extends javax.swing.JFrame {
                 } 
                 else if (line.contains("<RENTAL>")){
                         curReadingType = 2;
+                } 
+                else if (line.contains("</")){
+                    System.out.println("Skipping Line");
                 } else {
                     List<String> vals = Arrays.asList(line.split(","));
                     switch (curReadingType){
@@ -344,18 +501,19 @@ public class frmMain extends javax.swing.JFrame {
                         case 2:
                             try{
                                 //search the car and customer list for cars/customers with the same name, otherwise create a new customer and car with that name
-                                Object car = new Car();
-                                Object customer = new Customer();
-                                for (Object o : arrCars){
-                                    if(o.toString().equals(vals.get(0))){
-                                        car = o;
+                                Car car = new Car();
+                                Customer customer = new Customer();
+                                for (Car c : arrCars){
+                                    if(vals.get(0).contains(c.getLicensePlate())){
+                                        car = c;
                                     }
                                 }
-                                for (Object o : arrCustomer){
-                                    if(o.toString().equals(vals.get(1))){
-                                        customer = o;
+                                for (Customer cu : arrCustomer){
+                                    if(vals.get(1).contains(cu.getFirstName()+cu.getLastName()+cu.getPhoneNumber())){
+                                        customer = cu;
                                     }
                                 }
+                                arrRentals.add(new CarRental(car,customer,Integer.parseInt(vals.get(2))));
                             }catch(Exception e){
                                 System.err.println("got bad data for a rental");
                             }
@@ -366,6 +524,7 @@ public class frmMain extends javax.swing.JFrame {
                     }
                 }                
             }
+            br.close();
         }catch(Exception e){
             System.err.println(e);
         }
@@ -414,9 +573,11 @@ public class frmMain extends javax.swing.JFrame {
     }
     //Zach's variable declarations - DO modify if you want I guess, I don't care. I'm not snarky like netbeans generated code is
     private int returnValue;
+    public frmAddCustomer frm1;
+    public frmAddCar frm2;
+    public frmSearch frm3;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateRental;
-    private javax.swing.JButton btnDetails;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -431,7 +592,9 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JList<String> lstRentals;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileClose;
-    private javax.swing.JMenuItem mnuFileNew;
+    private javax.swing.JMenu mnuFileNew;
+    private javax.swing.JMenuItem mnuFileNewCar;
+    private javax.swing.JMenuItem mnuFileNewCustomer;
     private javax.swing.JMenuItem mnuFileOpen;
     private javax.swing.JMenuItem mnuFileSave;
     private javax.swing.JMenuItem mnuFileSaveAs;

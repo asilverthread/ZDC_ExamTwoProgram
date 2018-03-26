@@ -9,7 +9,7 @@ package zdc_examtwoprogram;
  *
  * @author Interact
  */
-public class Car {
+public class Car implements zdccarWritable{
 
     
     public Car() {
@@ -70,6 +70,10 @@ public class Car {
     @Override
     public String toString(){
         return this.LicensePlate;
+    }
+    @Override
+    public String prepForWrite(){
+        return this.LicensePlate+","+this.Color+","+this.Make+","+this.Model+","+Integer.toString(this.Year);
     }
     
     //var dec

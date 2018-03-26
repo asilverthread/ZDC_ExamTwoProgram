@@ -9,8 +9,11 @@ package zdc_examtwoprogram;
  *
  * @author Interact
  */
-public class Customer {
-
+public class Customer implements zdccarWritable{
+    
+    public Customer(String CustId){
+        this.CustId = CustId;
+    }
     public Customer(String FirstName, String LastName, String PhoneNumber) {
         this.FirstName = FirstName;
         this.LastName = LastName;
@@ -55,9 +58,16 @@ public class Customer {
     private void setCustId(){
         this.CustId = getFirstName()+getLastName()+getPhoneNumber();
     }
+    public String getCustId(){
+        return this.CustId;
+    }
     @Override
     public String toString(){
-        return this.CustId;
+        return this.FirstName+" "+this.LastName;
+    }
+    @Override
+    public String prepForWrite(){
+        return this.FirstName+","+this.LastName+","+this.PhoneNumber;
     }
     private String CustId;
     private String FirstName;

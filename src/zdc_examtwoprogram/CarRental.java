@@ -9,7 +9,7 @@ package zdc_examtwoprogram;
  *
  * @author Interact
  */
-public class CarRental {
+public class CarRental implements zdccarWritable{
 
     public CarRental() {
     }
@@ -47,6 +47,10 @@ public class CarRental {
     @Override
     public String toString(){
         return this.carToRent.toString()+this.customerRenting.toString()+Integer.toString(this.numberOfDays);
+    }
+    @Override
+    public String prepForWrite(){
+        return this.carToRent.getLicensePlate()+","+this.customerRenting.getCustId()+","+Integer.toString(this.getNumberOfDays());
     }
     
     private Car carToRent;
